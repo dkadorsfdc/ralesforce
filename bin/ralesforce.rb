@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+
+require 'trollop'
+require 'ralesforce/client'
+
+def check_required_opt(cmd_opts, option)
+  if !cmd_opts[option]
+    Trollop::die "#{option} required"
+  end
+  return cmd_opts[option]
+end
+
+SUB_COMMANDS = %w(login env query logout)
+global_opts = Trollop::options do
+  version "ralesforce 0.0.1 (c) 2011 Daniel Kador"
+  banner <<-EOS
+ralesforce is a command line interface for the salesforce.com APIs.
+
+Usage:
+      ralesforce login
+      
+      ralesforce env --host <host> --apiversion <23.0> --sessionid <yoursessionid>
+                  
+      ralesforce query --query "your query here" --outfile <outputfilename>
+            
+      ralesforce logout
+      
+where [options] are:
+EOS
+  stop_on SUB_COMMANDS
+end
+
+cmd = ARGV.shift # get the subcommand
+cmd_opts = case cmd
+  when "login" # parse login options
+    Trollop::options do
+    end
+  when "env" # parse environment options
+    Trollop::options do
+      opt :host, "host", :type => String
+      opt :apiversion, "apiversion", :type => String
+      opt :sessionid, "sessionid", :type => String
+    end
+  when "query" #
+    Trollop::options do
+      opt :query, "query", :type => String
+      opt :outfile, "outfile", :type => String
+    end
+  when "logout" # parse logout options
+    Trollop::options do
+    end
+  else
+    Trollop::die "unknown subcommand #{cmd.inspect}"
+  end
+
+#puts "Global options: #{global_opts.inspect}"
+#puts "Subcommand: #{cmd.inspect}"
+#puts "Subcommand options: #{cmd_opts.inspect}"
+#puts "Remaining arguments: #{ARGV.inspect}"
+
+c = Sfdc::Client.new
+case cmd
+when "login"
+  c.login
+when "env"
+  c.set_env({ :server_url => cmd_opts[:host], 
+              :api_version => cmd_opts[:apiversion], 
+              :access_token => cmd_opts[:sessionid] })
+when "query"
+  c.query(check_required_opt(cmd_opts, :query), cmd_opts[:outfile])
+when "logout"
+  c.logout
+end
