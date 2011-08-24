@@ -72,6 +72,9 @@ module Ralesforce
     end
   
     def read_login_info
+      if !File.exists?(File.dirname(@@filename))
+        Dir.mkdir(File.dirname(@@filename))
+      end
       if File.exists?(@@filename)
         s = IO.read(@@filename)
         login_info = JSON s
