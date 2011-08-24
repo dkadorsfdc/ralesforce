@@ -13,7 +13,7 @@ module Ralesforce
     @@oauth_path = "/services/oauth2/token"
     @@rest_path = "/services/data/"
     @@version = "22.0"
-    @@filename = ".logininfo"
+    @@filename = File.expand_path("~/.ralesforce/.logininfo")
     @@access_token
   
     def initialize
