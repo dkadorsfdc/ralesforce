@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   # s.add_development_dependency "rspec"
   # s.add_runtime_dependency "rest-client"
   s.add_dependency "trollop"
-  s.add_dependency "rest_client"
+  s.add_dependency "rest-client"
   s.add_dependency "savon"
   s.add_dependency "json"
   s.add_dependency "libxml-ruby"
